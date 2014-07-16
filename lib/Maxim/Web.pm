@@ -1,5 +1,6 @@
 package Maxim::Web;
 use Mojo::Base 'Mojolicious';
+use Maxim::Model::Bookmark;
 
 # This method will run once at server start
 sub startup {
@@ -8,11 +9,25 @@ sub startup {
   # Documentation browser under "/perldoc"
   $self->plugin('PODRenderer');
 
-  # Router
-  my $r = $self->routes;
+  my $model = Maxim::Model::Bookmark->new();
+  $self->helper(
+      model => sub {
+          return $model;
+      }
+  );
 
-  # Normal route to controller
-  $r->get('/')->to('example#welcome');
+  my $r = $self->routes;
+  $r->namespaces([qw/Maxim::Web::Controller/]);
+  $r->get('/')->to('root#index');
+  $r->get('/new')->to('root#post');
+  $r->post('/create')->to('root#create');
+
+
+  # Router
+  # my $r = $self->routes;
+  #
+  # # Normal route to controller
+  # $r->get('/')->to('example#welcome');
 }
 
 1;
